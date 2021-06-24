@@ -18,6 +18,7 @@ echo "============================================="
     -DNDEBUG \
     ${OPTIMIZE} \
     --bind \
+    --no-entry \
     -s STRICT=1 \
     -s ALLOW_MEMORY_GROWTH=1 \
     -s MALLOC=emmalloc \
@@ -27,7 +28,7 @@ echo "============================================="
     --post-js './web/module-post.js' \
     -o ./xatlas-web.js \
     web/*.cpp \
-    xatlas.cpp
+    source/xatlas/xatlas.cpp
 
   # Create output folder
   mkdir -p dist
