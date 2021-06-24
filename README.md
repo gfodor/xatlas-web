@@ -1,10 +1,10 @@
 ## xatlas
 
-[![Appveyor CI Build Status](https://ci.appveyor.com/api/projects/status/github/jpcy/xatlas?branch=master&svg=true)](https://ci.appveyor.com/project/jpcy/xatlas) [![Travis CI Build Status](https://travis-ci.org/jpcy/xatlas.svg?branch=master)](https://travis-ci.org/jpcy/xatlas) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Actions Status](https://github.com/jpcy/xatlas/workflows/build/badge.svg)](https://github.com/jpcy/xatlas/actions) [![Appveyor CI Build Status](https://ci.appveyor.com/api/projects/status/github/jpcy/xatlas?branch=master&svg=true)](https://ci.appveyor.com/project/jpcy/xatlas) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A cleaned up version of [thekla_atlas](https://github.com/Thekla/thekla_atlas).
+xatlas is a small C++11 library with no external dependencies that generates unique texture coordinates suitable for baking lightmaps or texture painting.
 
-Mesh charting, parameterization and atlas packing. Suitable for generating unique texture coordinates for baking lightmaps.
+It is an independent fork of [thekla_atlas](https://github.com/Thekla/thekla_atlas), used by [The Witness](https://en.wikipedia.org/wiki/The_Witness_(2016_video_game)).
 
 ## Screenshots
 
@@ -19,15 +19,29 @@ Mesh charting, parameterization and atlas packing. Suitable for generating uniqu
 #### [Graphite/Geogram](http://alice.loria.fr/index.php?option=com_content&view=article&id=22)
 ![Graphite/Geogram](https://user-images.githubusercontent.com/19478253/69903392-c0deb900-1398-11ea-8a52-c211bc7803a9.gif)
 
-## Changes from thekla_atlas
-* Smaller code size - from about 18 KLOC to 10 KLOC
-* Easier to integrate and build - a single source/header file pair instead of around 120 files and 10 directories.
-* Atlas resolution option for outputting multiple atlases.
-* Flexible data description API for input meshes.
-* Better tolerance of bad input geometry. Zero length edges and zero area faces are ignored.
-* Support for packing multiple atlases/parameterizations into a single atlas.
-
 ## How to use
+
+### Building
+
+Premake is used. For CMake support, see [here](https://github.com/cpp-pm/xatlas).
+
+Integration into an existing build is simple, only `xatlas.cpp` and `xatlas.h` are required. They can be found in [source/xatlas](https://github.com/jpcy/xatlas/blob/master/source/xatlas)
+
+#### Windows
+
+Run `build\premake.bat`. Open `build\vs2019\xatlas.sln`.
+
+Note: change the build configuration to "Release". The default - "Debug" - severely degrades performance.
+
+#### Linux
+
+Required packages: `libgl1-mesa-dev libgtk-3-dev xorg-dev`.
+
+Install Premake version 5. Run `premake5 gmake`, `cd build/gmake`, `make`.
+
+### Bindings
+
+[Python](https://github.com/mworchel/xatlas-python)
 
 ### Generate an atlas (simple API)
 
@@ -39,21 +53,20 @@ The `xatlas::Atlas` instance created in the first step now contains the result: 
 
 Cleanup with `xatlas::Destroy`.
 
-[Example code here.](https://github.com/jpcy/xatlas/blob/master/extra/example.cpp)
+[Example code here.](https://github.com/jpcy/xatlas/blob/master/source/examples/example.cpp)
 
 ### Generate an atlas (tools/editor integration API)
 
 Instead of calling `xatlas::Generate`, the following functions can be called in sequence:
 
-1. `xatlas::ComputeCharts`: meshes are segmented into charts.
-2. `xatlas::ParameterizeCharts`: charts are flattened into 2D parameterizations.
-3. `xatlas::PackCharts`: charts are packed into one or more atlases.
+1. `xatlas::ComputeCharts`: meshes are segmented into charts and parameterized.
+2. `xatlas::PackCharts`: charts are packed into one or more atlases.
 
 All of these functions take a progress callback. Return false to cancel.
 
 You can call any of these functions multiple times, followed by the proceeding functions, to re-generate the atlas. E.g. calling `xatlas::PackCharts` multiple times to tweak options like unit to texel scale and resolution.
 
-See the [viewer](https://github.com/jpcy/xatlas/tree/master/extra) for example code.
+See the [viewer](https://github.com/jpcy/xatlas/tree/master/source/examples/viewer) for example code.
 
 ### Pack multiple atlases into a single atlas
 
@@ -61,18 +74,11 @@ See the [viewer](https://github.com/jpcy/xatlas/tree/master/extra) for example c
 2. Add one or more meshes with `xatlas::AddUvMesh`.
 3. Call `xatlas::PackCharts`.
 
-[Example code here.](https://github.com/jpcy/xatlas/blob/master/extra/example_uvmesh.cpp)
-
-## TODO
-
-* Segmentation: improve chart merging by using similar metrics to chart growing
-* Segmentation/Parameterization: detect geometry with zero Gaussian curvature (e.g. a cylinder) and unwrap as a single chart
-* Viewer: better lightmap baking
-* Viewer: chart picking in scene and texture views
+[Example code here.](https://github.com/jpcy/xatlas/blob/master/source/examples/example_uvmesh.cpp)
 
 ## Technical information / related publications
 
-[Ignacio Castaño's blog post on thekla_atlas](http://the-witness.net/news/2010/03/graphics-tech-texture-parameterization/)
+[Ignacio Castaño's blog post on thekla_atlas](http://www.ludicon.com/castano/blog/articles/lightmap-parameterization/)
 
 P. Sander, J. Snyder, S. Gortler, and H. Hoppe. [Texture Mapping Progressive Meshes](http://hhoppe.com/proj/tmpm/)
 
@@ -94,31 +100,39 @@ Y. O’Donnell. [Precomputed Global Illumination in Frostbite](https://media.con
 
 [Bakery - GPU Lightmapper](https://assetstore.unity.com/packages/tools/level-design/bakery-gpu-lightmapper-122218)
 
+[DXR Ambient Occlusion Baking](https://github.com/Twinklebear/dxr-ao-bake) - A demo of ambient occlusion map baking using DXR inline ray tracing.
+
+[Filament](https://google.github.io/filament/)
+
 [Godot Engine](https://github.com/godotengine/godot)
 
 [Graphite/Geogram](http://alice.loria.fr/index.php?option=com_content&view=article&id=22)
 
-[Filament](https://google.github.io/filament/)
-
 [Lightmaps - An OpenGL sample demonstrating path traced lightmap baking on the CPU with Embree](https://github.com/diharaw/Lightmaps)
 
+[redner](https://github.com/BachiLi/redner)
+
+[Skylicht Engine](https://github.com/skylicht-lab/skylicht-engine)
+
 [toy](https://github.com/hugoam/toy) / [two](https://github.com/hugoam/two)
+
+[UNIGINE](https://unigine.com/) - [video](https://www.youtube.com/watch?v=S0gR9T1tWPg)
 
 [Wicked Engine](https://github.com/turanszkij/WickedEngine)
 
 ## Related projects
 
-[Microsoft's UVAtlas](https://github.com/Microsoft/UVAtlas) - isochart texture atlasing.
-
-[simpleuv](https://github.com/huxingyi/simpleuv/) - Automatic UV Unwrapping Library for Dust3D.
-
-[Ministry of Flat](http://www.quelsolaar.com/ministry_of_flat/) - Commercial automated UV unwrapper.
+[aobaker](https://github.com/prideout/aobaker) - Ambient occlusion baking. Uses [thekla_atlas](https://github.com/Thekla/thekla_atlas).
 
 [Lightmapper](https://github.com/ands/lightmapper) - Hemicube based lightmap baking. The example model texture coordinates were generated by [thekla_atlas](https://github.com/Thekla/thekla_atlas).
 
-[aobaker](https://github.com/prideout/aobaker) - Ambient occlusion baking. Uses [thekla_atlas](https://github.com/Thekla/thekla_atlas).
+[Microsoft's UVAtlas](https://github.com/Microsoft/UVAtlas) - isochart texture atlasing.
 
-[seamoptimizer](https://github.com/ands/seamoptimizer]) - A C/C++ single-file library that minimizes the hard transition errors of disjoint edges in lightmaps.
+[Ministry of Flat](http://www.quelsolaar.com/ministry_of_flat/) - Commercial automated UV unwrapper.
+
+[seamoptimizer](https://github.com/ands/seamoptimizer) - A C/C++ single-file library that minimizes the hard transition errors of disjoint edges in lightmaps.
+
+[simpleuv](https://github.com/huxingyi/simpleuv/) - Automatic UV Unwrapping Library for Dust3D.
 
 ## Models used
 
