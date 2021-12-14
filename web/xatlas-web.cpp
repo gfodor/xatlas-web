@@ -4,6 +4,7 @@ xatlas::Atlas *atlas;
 xatlas::MeshDecl *meshDecl;
 xatlas::UvMeshDecl *uvMeshDecl;
 uint32_t nextMeshId = 0;
+emscripten::val* callback;
 
 void createAtlas() {
   atlas = xatlas::Create();
@@ -67,8 +68,36 @@ uint32_t addUvMesh() {
   return (uint32_t)xatlas::AddUvMesh(atlas, *uvMeshDecl);
 }
 
-void generateAtlas() {
-  xatlas::Generate(atlas);
+void generateAtlas(emscripten::val params) {
+  if (params.hasOwnProperty("onProgress")) {
+    callback = new emscripten::val(params["onProgress"]);
+  } else {
+    callback = nullptr;
+  }
+  xatlas::SetProgressCallback(atlas, [](xatlas::ProgressCategory cat, int progress, void* userData) {
+    if (callback != nullptr) {
+      (*callback)(static_cast<int>(cat), progress);
+    }
+    return true;
+  });
+  xatlas::ChartOptions chartOptions;
+  xatlas::PackOptions packOptions;
+  if (params.hasOwnProperty("maxIterations")) {
+    chartOptions.maxIterations = params["maxIterations"].as<uint32_t>();
+  }
+  if (params.hasOwnProperty("useInputMeshUvs")) {
+    chartOptions.useInputMeshUvs = params["useInputMeshUvs"].as<bool>();
+  }
+  if (params.hasOwnProperty("margin")) {
+    packOptions.padding = params["margin"].as<uint32_t>();
+  }
+  if (params.hasOwnProperty("resolution")) {
+    packOptions.resolution = params["resolution"].as<uint32_t>();
+  }
+  if (params.hasOwnProperty("bruteForce")) {
+    packOptions.bruteForce = params["bruteForce"].as<bool>();
+  }
+  xatlas::Generate(atlas, chartOptions, packOptions);
 }
 
 AtlasMeshBufferInfo getMeshData(uint32_t meshId) {

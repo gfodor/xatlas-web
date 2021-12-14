@@ -37,7 +37,7 @@ extern uint32_t addMesh();
 
 extern uint32_t addUvMesh();
 
-extern void generateAtlas();
+extern void generateAtlas(emscripten::val params);
 
 extern AtlasMeshBufferInfo getMeshData(uint32_t meshId);
 
