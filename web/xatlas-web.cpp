@@ -88,8 +88,8 @@ void generateAtlas(emscripten::val params) {
   if (params.hasOwnProperty("useInputMeshUvs")) {
     chartOptions.useInputMeshUvs = params["useInputMeshUvs"].as<bool>();
   }
-  if (params.hasOwnProperty("margin")) {
-    packOptions.padding = params["margin"].as<uint32_t>();
+  if (params.hasOwnProperty("padding")) {
+    packOptions.padding = params["padding"].as<uint32_t>();
   }
   if (params.hasOwnProperty("resolution")) {
     packOptions.resolution = params["resolution"].as<uint32_t>();
