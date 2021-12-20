@@ -97,6 +97,12 @@ void generateAtlas(emscripten::val params) {
   if (params.hasOwnProperty("bruteForce")) {
     packOptions.bruteForce = params["bruteForce"].as<bool>();
   }
+  if (params.hasOwnProperty("rotateChartsToAxis")) {
+    packOptions.rotateChartsToAxis = params["rotateChartsToAxis"].as<bool>();
+  }
+  if (params.hasOwnProperty("rotateCharts")) {
+    packOptions.rotateCharts = params["rotateCharts"].as<bool>();
+  }
   xatlas::Generate(atlas, chartOptions, packOptions);
 }
 
