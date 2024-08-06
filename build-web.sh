@@ -22,6 +22,7 @@ echo "============================================="
     -s STRICT=1 \
     -s ALLOW_MEMORY_GROWTH=1 \
     -s MALLOC=emmalloc \
+    -lc++abi \
     -s MODULARIZE=1 \
     -s ENVIRONMENT='web,worker' \
     -s ASSERTIONS=1 \
