@@ -22,6 +22,8 @@ echo "============================================="
     -s STRICT=1 \
     -s ALLOW_MEMORY_GROWTH=1 \
     -s MALLOC=emmalloc \
+    -s INCOMING_MODULE_JS_API=["locateFile"] \
+    -s EXPORTED_RUNTIME_METHODS=["HEAPU32","HEAPF32"] \
     -lc++abi \
     -s MODULARIZE=1 \
     -s ENVIRONMENT='web,worker' \
